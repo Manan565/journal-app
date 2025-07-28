@@ -19,7 +19,7 @@ public class UserService {
 
     public void saveEntry(User user){
 
-        userRepository.save(user);
+          userRepository.save(user);
     }
 
     public List<User> getAll(){
@@ -33,5 +33,9 @@ public class UserService {
 
     public void deleteById(ObjectId id){
         userRepository.deleteById((id));
+    }
+
+    public User findByUserName(String  userName) {
+        return userRepository.findByUserName((userName));
     }
 }

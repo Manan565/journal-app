@@ -2,7 +2,9 @@ package com.manan565.journalApp.controller;
 
 
 import com.manan565.journalApp.entity.JournalEntry;
+import com.manan565.journalApp.entity.User;
 import com.manan565.journalApp.services.JournalEntryService;
+import com.manan565.journalApp.services.UserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,56 +20,28 @@ import java.util.*;
 public class UserController {
 
     @Autowired
-    private JournalEntryService journalEntryService;
+    private UserService userService;
 
     @GetMapping
-    public ResponseEntity<?> getAll(){
-        List<JournalEntry> all=journalEntryService.getAll();
-        if(all != null && !all.isEmpty()){
-            return new ResponseEntity<>(all, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public List<User> getAllUsers(){
+        return userService.getAll();
     }
 
     @PostMapping
-    public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry myEntry){
-        try{
-            myEntry.setDate(LocalDateTime.now());
-            journalEntryService.saveEntry(myEntry);
-            return new ResponseEntity<>(myEntry,HttpStatus.CREATED);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        }
+    public void createUser(@RequestBody User user){
+        userService.saveEntry(user);
     }
 
-    @GetMapping("id/{myId}")
-    public ResponseEntity<?>  getJournalEntryById(@PathVariable ObjectId myId){
-        Optional<JournalEntry> journalEntry = journalEntryService.findById(myId);
-        if(journalEntry.isPresent()){
-            return new ResponseEntity<>(journalEntry.get(),HttpStatus.OK);
-
+    @PutMapping("/{userName")
+    public ResponseEntity<?> updateUser(@PathVariable String userName,@RequestBody User user){
+        User userInDb = userService.findByUserName(userName);
+        if(userInDb!=null){
+           userInDb.setUserName(user.getUserName());
+           userInDb.setPassword(user.getPassword());
+           userService.saveEntry(userInDb);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
 
-    @DeleteMapping("id/{myId}")
-    public ResponseEntity<?> deleteJournalEntryById(@PathVariable ObjectId myId){
-        journalEntryService.deleteById(myId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @PutMapping("/id/{id}")
-    public ResponseEntity<?> updateJournalById(@PathVariable ObjectId id,@RequestBody JournalEntry newEntry){
-        JournalEntry old = journalEntryService.findById(id).orElse(null);
-        if(old!=null){
-            old.setTitle(newEntry.getTitle()!=null && !newEntry.getTitle().equals("") ? newEntry.getTitle(): old.getTitle());
-            old.setContent(newEntry.getContent()!=null && !newEntry.getContent().equals("") ? newEntry.getContent(): old.getContent());
-            journalEntryService.saveEntry((old));
-            return new ResponseEntity<>(old, HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
     }
 
