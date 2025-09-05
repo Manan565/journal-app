@@ -38,6 +38,4 @@ Roadmap
  AI-powered insights
  Multi-language support
 
-### 1. Clone the Repository
 
-```bash
