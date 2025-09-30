@@ -2,6 +2,7 @@ package com.manan565.journalApp.services;
 
 import com.manan565.journalApp.entity.User;
 import com.manan565.journalApp.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class UserService {
     @Autowired
     private UserRepository userRepository;
@@ -19,9 +21,16 @@ public class UserService {
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public void saveNewUser(User user){
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(List.of("USER"));
-        userRepository.save(user);
+        try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRoles(List.of("USER"));
+            userRepository.save(user);
+        }catch(Exception e){
+            log.error("Error occured for {} :", user.getUserName(),e);
+            log.warn("hahahaha");
+
+
+        }
     }
     public void saveAdmin(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
